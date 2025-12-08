@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <title>Step 1 - 구조 잡기</title>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>프로필 생성기</h1>
+      <p>구조 설계 단계입니다.</p>
+    </header>
+
+    <section id="viewForm">
+      <form>
+        <div>
+          <label>이름</label>
+          <input type="text" placeholder="이름 입력">
+        </div>
+        <div>
+          <label>프로필 사진</label>
+          <input type="file">
+        </div>
+        <div>
+          <label>카드 색상</label>
+          <div class="color-grid">
+            <button type="button">파랑</button>
+            <button type="button">분홍</button>
+            <button type="button">민트</button>
+          </div>
+        </div>
+        <div>
+          <label>MBTI</label>
+          <input type="text">
+          <button type="button">랜덤</button>
+        </div>
+        <button type="submit">생성하기</button>
+      </form>
+    </section>
+
+    <section id="viewResult">
+      <div class="id-card">
+        <div class="avatar-area">이미지</div>
+        <h2>이름이 여기에</h2>
+        <p>MBTI</p>
+        <p>소개글이 들어갑니다.</p>
+      </div>
+      
+      <button>복사하기</button>
+      <button>저장하기</button>
+    </section>
+  </div>
+</body>
+</html>

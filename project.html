@@ -2,53 +2,74 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
-  <title>Step 1 - 구조 잡기</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Profile Card Final</title>
+  <!-- 폰트 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <!-- CSS 연결 -->
+  <link rel="stylesheet" href="style.css">
+  <!-- html2canvas -->
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
   <div class="wrap">
-    <header>
-      <h1>프로필 생성기</h1>
-      <p>구조 설계 단계입니다.</p>
-    </header>
-
-    <section id="viewForm">
-      <form>
-        <div>
-          <label>이름</label>
-          <input type="text" placeholder="이름 입력">
+    <!-- 입력 폼 -->
+    <section id="viewForm" class="panel">
+      <h2 style="text-align:center; margin-top:0">프로필 생성기</h2>
+      <form id="profileForm">
+        <label>이름</label>
+        <input type="text" id="name" placeholder="닉네임 입력" required>
+        <label>프로필 사진</label>
+        <input type="file" id="profileImg" accept="image/*">
+        <label>카드 색상</label>
+        <div class="color-grid">
+          <div class="swatch bg-ocean active" data-theme="bg-ocean"></div>
+          <div class="swatch bg-peach" data-theme="bg-peach"></div>
+          <div class="swatch bg-mint" data-theme="bg-mint"></div>
+          <div class="swatch bg-indigo" data-theme="bg-indigo"></div>
         </div>
-        <div>
-          <label>프로필 사진</label>
-          <input type="file">
+        <label>MBTI</label>
+        <div style="display:flex; gap:5px">
+          <input type="text" id="mbti" placeholder="ENFP">
+          <button type="button" id="randomMbtiBtn" style="width:60px;">랜덤</button>
         </div>
-        <div>
-          <label>카드 색상</label>
-          <div class="color-grid">
-            <button type="button">파랑</button>
-            <button type="button">분홍</button>
-            <button type="button">민트</button>
-          </div>
-        </div>
-        <div>
-          <label>MBTI</label>
-          <input type="text">
-          <button type="button">랜덤</button>
-        </div>
-        <button type="submit">생성하기</button>
+        <label>좋아하는 음식</label>
+        <input type="text" id="food" placeholder="떡볶이">
+        <label>취미</label>
+        <input type="text" id="hobby" placeholder="누워있기">
+        <label>연락 선호 시간</label>
+        <select id="contactTime">
+          <option value="any">상관없음</option>
+          <option value="day">낮</option>
+          <option value="night">밤</option>
+        </select>
+        <label>문체</label>
+        <select id="tone">
+          <option value="casual">친근하게</option>
+          <option value="polite">공손하게</option>
+        </select>
+        <button type="submit" class="btn-main">완료 ✨</button>
       </form>
     </section>
-
-    <section id="viewResult">
-      <div class="id-card">
-        <div class="avatar-area">이미지</div>
-        <h2>이름이 여기에</h2>
-        <p>MBTI</p>
-        <p>소개글이 들어갑니다.</p>
+    <!-- 결과 화면 -->
+    <section id="viewResult" class="panel hidden">
+      <div id="captureTarget">
+        <div class="id-card bg-ocean" id="cardEl">
+          <div class="avatar-box" id="rAvatar"></div>
+          <h2 id="rName"></h2>
+          <span id="rMbti"></span>
+          <div id="rTags"></div>
+          <div id="rDesc"></div>
+        </div>
       </div>
-      
-      <button>복사하기</button>
-      <button>저장하기</button>
+      <div class="actions">
+        <button id="copyBtn" class="btn-sub">텍스트 복사</button>
+        <button id="downloadBtn" class="btn-sub download">이미지 저장</button>
+      </div>
+      <button id="backBtn" class="back-btn">다시 만들기</button>
     </section>
   </div>
+  <!-- JS 연결 -->
+  <script src="script.js"></script>
 </body>
 </html>

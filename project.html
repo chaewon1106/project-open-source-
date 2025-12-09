@@ -3,17 +3,24 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Profile Card Final</title>
-  <!-- 폰트 -->
+  <title>Profile Card — Step 2</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-  <!-- CSS 연결 -->
-  <link rel="stylesheet" href="style.css">
-  <!-- html2canvas -->
-  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <style>
+    /* 아주 간단한 인라인 스타일 (원본 style.css가 없을 때도 보이게) */
+    body{font-family:Pretendard,system-ui;margin:24px;background:#f7fafc;color:#0f1724}
+    .wrap{max-width:760px;margin:0 auto}
+    .panel{background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 20px rgba(2,6,23,0.06);margin-bottom:14px}
+    .color-grid{display:flex;gap:8px;margin:8px 0}
+    .swatch{width:36px;height:36px;border-radius:50%;cursor:pointer;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.08)}
+    .swatch.active{transform:scale(1.05);border-color:#111}
+    .id-card{padding:20px;border-radius:12px}
+    .avatar-box{width:80px;height:80px;border-radius:12px;background:#e6eef8;margin:0 auto 8px;display:flex;align-items:center;justify-content:center}
+    #previewThumb{display:block;width:64px;height:64px;object-fit:cover;border-radius:8px;margin-top:8px}
+    .hidden{display:none}
+  </style>
 </head>
 <body>
   <div class="wrap">
-    <!-- 입력 폼 -->
     <section id="viewForm" class="panel">
       <h2 style="text-align:center; margin-top:0">프로필 생성기</h2>
       <form id="profileForm">
@@ -21,12 +28,14 @@
         <input type="text" id="name" placeholder="닉네임 입력" required>
         <label>프로필 사진</label>
         <input type="file" id="profileImg" accept="image/*">
+        <!-- 썸네일이 여기 표시됨 -->
+        <img id="previewThumb" class="hidden" alt="썸네일">
         <label>카드 색상</label>
         <div class="color-grid">
-          <div class="swatch bg-ocean active" data-theme="bg-ocean"></div>
-          <div class="swatch bg-peach" data-theme="bg-peach"></div>
-          <div class="swatch bg-mint" data-theme="bg-mint"></div>
-          <div class="swatch bg-indigo" data-theme="bg-indigo"></div>
+          <div class="swatch bg-ocean active" data-theme="bg-ocean" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd)"></div>
+          <div class="swatch bg-peach" data-theme="bg-peach" style="background:linear-gradient(135deg,#ffe4e6,#fda4af)"></div>
+          <div class="swatch bg-mint" data-theme="bg-mint" style="background:linear-gradient(135deg,#dcfce7,#86efac)"></div>
+          <div class="swatch bg-indigo" data-theme="bg-indigo" style="background:linear-gradient(135deg,#e0e7ff,#a5b4fc)"></div>
         </div>
         <label>MBTI</label>
         <div style="display:flex; gap:5px">
@@ -51,13 +60,13 @@
         <button type="submit" class="btn-main">완료 ✨</button>
       </form>
     </section>
-    <!-- 결과 화면 -->
+
     <section id="viewResult" class="panel hidden">
       <div id="captureTarget">
         <div class="id-card bg-ocean" id="cardEl">
-          <div class="avatar-box" id="rAvatar"></div>
-          <h2 id="rName"></h2>
-          <span id="rMbti"></span>
+          <div class="avatar-box" id="rAvatar">A</div>
+          <h2 id="rName">이름</h2>
+          <span id="rMbti">MBTI</span>
           <div id="rTags"></div>
           <div id="rDesc"></div>
         </div>
@@ -69,7 +78,39 @@
       <button id="backBtn" class="back-btn">다시 만들기</button>
     </section>
   </div>
-  <!-- JS 연결 -->
-  <script src="script.js"></script>
+
+  <script>
+    // 2단계 스크립트: 색상 클릭 → 카드 미리보기, 업로드 썸네일 표시
+    const swatches = document.querySelectorAll(".swatch");
+    const cardEl = document.getElementById("cardEl");
+    const profileImg = document.getElementById("profileImg");
+    const previewThumb = document.getElementById("previewThumb");
+
+    swatches.forEach(s => {
+      s.addEventListener("click", () => {
+        document.querySelector(".swatch.active")?.classList.remove("active");
+        s.classList.add("active");
+        const theme = s.dataset.theme;
+        cardEl.className = "id-card " + theme;
+      });
+    });
+
+    profileImg.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) {
+        previewThumb.src = "";
+        previewThumb.classList.add("hidden");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        previewThumb.src = evt.target.result;
+        previewThumb.classList.remove("hidden");
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // (폼 제출/뒤로가기 등 기능은 3단계에서 확장)
+  </script>
 </body>
 </html>

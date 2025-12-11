@@ -3,183 +3,430 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Profile Card — Step 3</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <title>Profile Card - Final Fixed</title>
+  
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  
   <style>
-    /* 2단계 스타일 유지 + 약간 정리 */
-    body{font-family:Pretendard,system-ui;margin:24px;background:#f7fafc;color:#0f1724}
-    .wrap{max-width:760px;margin:0 auto}
-    .panel{background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 20px rgba(2,6,23,0.06);margin-bottom:14px}
-    .color-grid{display:flex;gap:8px;margin:8px 0}
-    .swatch{width:36px;height:36px;border-radius:50%;cursor:pointer;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.08)}
-    .swatch.active{transform:scale(1.05);border-color:#111}
-    .id-card{padding:20px;border-radius:12px}
-    .avatar-box{width:80px;height:80px;border-radius:12px;background:#e6eef8;margin:0 auto 8px;display:flex;align-items:center;justify-content:center}
-    #previewThumb{display:block;width:64px;height:64px;object-fit:cover;border-radius:8px;margin-top:8px}
-    .tags{display:flex;gap:6px;justify-content:center;margin-top:8px}
-    .tag{background:#fff;padding:6px 10px;border-radius:20px;border:1px solid #e6eef8;font-size:13px}
-    .hidden{display:none}
+    :root {
+      --bg-color: #F8FAFC;
+      --panel-bg: rgba(255, 255, 255, 0.9);
+      --primary: #3b82f6; 
+      --text-main: #0f172a;
+      --text-sub: #64748b;
+      --border-color: #e2e8f0;
+      --shadow: 0 4px 20px rgba(0,0,0,0.05);
+      --input-bg: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+    
+    body {
+      font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      overflow-x: hidden;
+    }
+
+    .mesh-bg {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
+      background: radial-gradient(circle at 50% 50%, #f1f5f9 0%, #dfe7f2 100%);
+    }
+
+    .wrap { width: min(460px, 92%); padding: 40px 0; position: relative; z-index: 1; }
+
+    header { text-align: center; margin-bottom: 32px; }
+    header h1 { font-size: 24px; font-weight: 700; margin: 0 0 8px; color: #0f172a; letter-spacing: -0.5px; }
+    header p { margin: 0; color: var(--text-sub); font-size: 14px; }
+
+    .clean-panel {
+      background: var(--panel-bg); backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color); border-radius: 20px; padding: 32px 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .fade-enter { animation: fadeUp 0.4s ease-out forwards; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .form-group { margin-bottom: 20px; }
+    label { display: block; font-size: 13px; font-weight: 600; color: var(--text-sub); margin-bottom: 8px; }
+    .input-wrapper { display: flex; align-items: center; gap: 8px; }
+
+    input[type="text"], select, input[type="file"] {
+      width: 100%; padding: 12px 14px; background: var(--input-bg);
+      border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); font-size: 14px;
+      transition: all 0.2s;
+    }
+    input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1); }
+    input::placeholder { color: #cbd5e1; }
+    input[type="file"] { padding: 8px; font-size: 12px; }
+    input[type="file"]::file-selector-button {
+      background: #f1f5f9; border: 1px solid #e2e8f0; color: #475569;
+      padding: 6px 12px; margin-right: 12px; border-radius: 6px; cursor: pointer; font-weight: 500;
+    }
+
+    .color-grid { display: flex; gap: 12px; padding: 4px 0; justify-content: center; }
+    .color-swatch {
+      width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+      border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: transform 0.2s;
+    }
+    .color-swatch:hover { transform: translateY(-2px); }
+    .color-swatch.active { transform: scale(1.1); border-color: var(--text-main); }
+
+    .bg-ocean { background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); color: #0c4a6e; }
+    .bg-peach { background: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%); color: #881337; }
+    .bg-mint { background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); color: #14532d; }
+    .bg-gray { background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); color: #1e293b; }
+    .bg-indigo { background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); color: #312e81; }
+
+    button { cursor: pointer; font-family: inherit; border: none; }
+    .btn-rand {
+      width: 50px; height: 43px; flex-shrink: 0; border-radius: 8px;
+      background: #f8fafc; color: #64748b; font-size: 13px; font-weight: 600;
+      border: 1px solid var(--border-color); transition: 0.2s;
+    }
+    .btn-rand:hover { background: #fff; color: var(--primary); border-color: var(--primary); }
+
+    .btn-primary {
+      width: 100%; padding: 16px; margin-top: 16px; border-radius: 10px;
+      background: var(--text-main); color: white; font-size: 15px; font-weight: 600; transition: background 0.2s;
+    }
+    .btn-primary:hover { background: #334155; }
+
+    .id-card-wrapper { padding: 10px; margin-bottom: 24px; }
+    .id-card {
+      position: relative; overflow: hidden; border-radius: 20px; padding: 40px 30px; text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.08); transition: all 0.3s ease;
+    }
+    
+    .avatar-frame {
+      width: 100px; height: 100px; margin: 0 auto 20px; border-radius: 50%;
+      background: rgba(255,255,255,0.5); overflow: hidden;
+    }
+    .avatar-img {
+      width: 100%; height: 100%; object-fit: cover;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; font-weight: 700; background: rgba(255,255,255,0.8); color: inherit;
+    }
+    
+    /* [수정됨] 업로드된 이미지가 컨테이너를 가득 채우도록 스타일 추가 */
+    .avatar-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .card-name { font-size: 22px; font-weight: 800; margin: 0 0 6px; color: inherit; }
+    .card-mbti {
+      display: inline-block; font-size: 12px; font-weight: 600;
+      background: rgba(255,255,255,0.4); color: inherit;
+      padding: 4px 10px; border-radius: 4px; margin-bottom: 20px;
+    }
+
+    .card-tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 24px; }
+    .tag {
+      font-size: 12px; background: rgba(255,255,255,0.5);
+      padding: 6px 12px; border-radius: 100px; color: inherit; font-weight: 500;
+    }
+
+    .card-desc {
+      background: rgba(255,255,255,0.7); padding: 20px; border-radius: 12px;
+      font-size: 14px; line-height: 1.6; color: #334155; text-align: left; word-break: keep-all;
+    }
+
+    .action-group { display: flex; gap: 10px; margin-bottom: 16px; }
+    .btn-secondary {
+      flex: 1; padding: 14px; border-radius: 10px; background: white; border: 1px solid var(--border-color);
+      color: #475569; font-weight: 500; font-size: 14px; transition: 0.2s;
+    }
+    .btn-secondary:hover { background: #f8fafc; }
+    .btn-download { background: var(--text-main); color: white; border: none; }
+    .btn-download:hover { background: #334155; }
+    .btn-text { width: 100%; background: none; color: #94a3b8; font-size: 13px; text-decoration: underline; padding: 10px; }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <section id="viewForm" class="panel">
-      <h2 style="text-align:center; margin-top:0">프로필 생성기</h2>
-      <form id="profileForm">
+
+<div class="mesh-bg"></div>
+
+<div class="wrap">
+  <header>
+    <h1>프로필 생성기</h1>
+    <p>담백하고 깔끔한 나만의 소개</p>
+  </header>
+
+  <section id="viewForm" class="clean-panel fade-enter">
+    <form id="profileForm">
+      <div class="form-group">
         <label>이름</label>
-        <input type="text" id="name" placeholder="닉네임 입력" required>
+        <div class="input-wrapper">
+          <input type="text" id="name" placeholder="본명 또는 닉네임" required autocomplete="off">
+        </div>
+      </div>
+
+      <div class="form-group">
         <label>프로필 사진</label>
         <input type="file" id="profileImg" accept="image/*">
-        <img id="previewThumb" class="hidden" alt="썸네일">
-        <label>카드 색상</label>
+      </div>
+
+      <div class="form-group">
+        <label style="margin-bottom:12px;">카드 색상</label>
         <div class="color-grid">
-          <div class="swatch bg-ocean active" data-theme="bg-ocean" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd)"></div>
-          <div class="swatch bg-peach" data-theme="bg-peach" style="background:linear-gradient(135deg,#ffe4e6,#fda4af)"></div>
-          <div class="swatch bg-mint" data-theme="bg-mint" style="background:linear-gradient(135deg,#dcfce7,#86efac)"></div>
-          <div class="swatch bg-indigo" data-theme="bg-indigo" style="background:linear-gradient(135deg,#e0e7ff,#a5b4fc)"></div>
+          <div class="color-swatch bg-ocean active" data-theme="bg-ocean"></div>
+          <div class="color-swatch bg-peach" data-theme="bg-peach"></div>
+          <div class="color-swatch bg-mint" data-theme="bg-mint"></div>
+          <div class="color-swatch bg-indigo" data-theme="bg-indigo"></div>
+          <div class="color-swatch bg-gray" data-theme="bg-gray"></div>
         </div>
+      </div>
+
+      <div class="form-group">
         <label>MBTI</label>
-        <div style="display:flex; gap:5px">
-          <input type="text" id="mbti" placeholder="ENFP">
-          <button type="button" id="randomMbtiBtn" style="width:60px;">랜덤</button>
+        <div class="input-wrapper">
+          <input type="text" id="mbti" placeholder="예: ENFP" style="text-transform:uppercase;">
+          <button type="button" id="btnRandMbti" class="btn-rand">랜덤</button>
         </div>
+      </div>
+
+      <div class="form-group">
         <label>좋아하는 음식</label>
-        <input type="text" id="food" placeholder="떡볶이">
-        <label>취미</label>
-        <input type="text" id="hobby" placeholder="누워있기">
+        <div class="input-wrapper">
+          <input type="text" id="food" placeholder="김치찌개, 파스타...">
+          <button type="button" id="btnRandFood" class="btn-rand">랜덤</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>취미 / 관심사</label>
+        <div class="input-wrapper">
+          <input type="text" id="hobby" placeholder="독서, 코딩...">
+          <button type="button" id="btnRandHobby" class="btn-rand">랜덤</button>
+        </div>
+      </div>
+
+      <div class="form-group">
         <label>연락 선호 시간</label>
         <select id="contactTime">
           <option value="any">상관없음</option>
-          <option value="day">낮</option>
-          <option value="night">밤</option>
+          <option value="day">낮 (09:00 - 18:00)</option>
+          <option value="night">밤 (19:00 - 24:00)</option>
         </select>
-        <label>문체</label>
-        <select id="tone">
-          <option value="casual">친근하게</option>
-          <option value="polite">공손하게</option>
-        </select>
-        <button type="submit" class="btn-main">완료 ✨</button>
-      </form>
-    </section>
+      </div>
 
-    <section id="viewResult" class="panel hidden">
-      <div id="captureTarget">
-        <div class="id-card bg-ocean" id="cardEl">
-          <div class="avatar-box" id="rAvatar"></div>
-          <h2 id="rName">이름</h2>
-          <span id="rMbti">MBTI</span>
-          <div class="tags" id="rTags"></div>
-          <div id="rDesc"></div>
+      <div class="form-group">
+        <label>문체 선택</label>
+        <select id="tone">
+          <option value="polite">차분하고 공손하게 (회사용)</option>
+          <option value="casual">친근하고 자연스럽게 (일상용)</option>
+          <option value="brief">간결하고 명확하게 (정보위주)</option>
+          <option value="emotional">감성적인 에세이톤 (기록용)</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn-primary">프로필 카드 생성</button>
+    </form>
+  </section>
+
+  <section id="viewResult" class="fade-enter hidden">
+    <div id="captureTarget" class="id-card-wrapper">
+      <div class="id-card" id="cardElement">
+        <div class="card-content">
+          <div class="avatar-frame">
+            <div class="avatar-img" id="rAvatar"></div>
+          </div>
+          <h2 class="card-name" id="rName"></h2>
+          <span class="card-mbti" id="rMbti"></span>
+          <div class="card-tags" id="rTags"></div>
+          <div class="card-desc" id="rDesc"></div>
         </div>
       </div>
-      <div class="actions">
-        <button id="copyBtn" class="btn-sub">텍스트 복사</button>
-        <button id="downloadBtn" class="btn-sub download">이미지 저장</button>
-      </div>
-      <button id="backBtn" class="back-btn">다시 만들기</button>
-    </section>
-  </div>
+    </div>
 
-  <script>
-    // 데이터 뱅크 (랜덤용)
-    const mbtiList = ["ENFP","INFP","INFJ","INTJ","ISTJ","ISFJ","ESTP","ESFP","ENTP","ENTJ"];
+    <div class="action-group">
+      <button class="btn-secondary" id="copyBtn">텍스트 복사</button>
+      <button class="btn-secondary btn-download" id="downloadBtn">이미지 저장</button>
+    </div>
+    <button class="btn-text" id="backBtn">다시 만들기</button>
+  </section>
+</div>
 
-    // 색상 스와치 & 미리보기
-    const swatches = document.querySelectorAll(".swatch");
-    const cardEl = document.getElementById("cardEl");
-    const profileImg = document.getElementById("profileImg");
-    const previewThumb = document.getElementById("previewThumb");
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  let uploadedImageSrc = null;
+  let selectedTheme = 'bg-ocean';
 
-    swatches.forEach(s => {
-      s.addEventListener("click", () => {
-        document.querySelector(".swatch.active")?.classList.remove("active");
-        s.classList.add("active");
-        const theme = s.dataset.theme;
-        cardEl.className = "id-card " + theme;
-      });
+  const dataBank = {
+    mbti: ['ISTJ','ISFJ','INFJ','INTJ','ISTP','ISFP','INFP','INTP','ESTP','ESFP','ENFP','ENTP','ESTJ','ESFJ','ENFJ','ENTJ'],
+    foods: ['김치찌개','평양냉면','초밥','파스타','스테이크','떡볶이','국밥','샐러드','피자','치킨'],
+    hobbies: ['독서','영화 감상','코딩','헬스','산책','사진 촬영','전시회 관람','게임','드라이브','음악 감상']
+  };
+
+  const $ = id => document.getElementById(id);
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+  // 랜덤 버튼
+  $('btnRandMbti').addEventListener('click', () => { $('mbti').value = pick(dataBank.mbti); });
+  $('btnRandFood').addEventListener('click', () => { $('food').value = pick(dataBank.foods); });
+  $('btnRandHobby').addEventListener('click', () => { $('hobby').value = pick(dataBank.hobbies); });
+
+  // 컬러 선택
+  const swatches = document.querySelectorAll('.color-swatch');
+  swatches.forEach(swatch => {
+    swatch.addEventListener('click', () => {
+      swatches.forEach(s => s.classList.remove('active'));
+      swatch.classList.add('active');
+      selectedTheme = swatch.getAttribute('data-theme');
     });
+  });
 
-    // 이미지 업로드 → 폼 썸네일 및 결과 아바타용 데이터 저장
-    let avatarSrc = "";
-    profileImg.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (!file) { previewThumb.classList.add("hidden"); avatarSrc = ""; return; }
+  // [중요] 이미지 업로드 처리 로직
+  $('profileImg').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if(file) {
       const reader = new FileReader();
-      reader.onload = (evt) => {
-        previewThumb.src = evt.target.result;
-        previewThumb.classList.remove("hidden");
-        avatarSrc = evt.target.result; // 결과에서 사용
-      };
+      // 파일을 읽어서 데이터 URL로 변환 후 저장
+      reader.onload = function(evt) { uploadedImageSrc = evt.target.result; };
       reader.readAsDataURL(file);
-    });
+    } else {
+      uploadedImageSrc = null;
+    }
+  });
 
-    // MBTI 랜덤
-    document.getElementById("randomMbtiBtn").addEventListener("click", () => {
-      const pick = mbtiList[Math.floor(Math.random() * mbtiList.length)];
-      document.getElementById("mbti").value = pick;
-    });
+  // 폼 제출
+  $('profileForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const info = {
+      name: $('name').value.trim(),
+      mbti: $('mbti').value.toUpperCase().trim() || 'SECRET',
+      food: $('food').value.trim() || '음식',
+      hobby: $('hobby').value.trim() || '취미',
+      contact: $('contactTime').value,
+      tone: $('tone').value
+    };
 
-    // 설명 생성 (간단)
-    function makeDesc(name, food, hobby, tone, contact) {
-      const contactText = contact === "day" ? "낮 연락 선호." : contact === "night" ? "밤 연락 선호." : "연락 시간 상관없음.";
-      if (tone === "casual") {
-        return `안녕, 나는 ${name}. ${food} 좋아하고 ${hobby} 하는 걸 즐겨. ${contactText}`;
-      } else {
-        return `안녕하세요, ${name}입니다. ${food}을 좋아하며 ${hobby}을(를) 즐깁니다. ${contactText}`;
-      }
+    if(!info.name) return alert('이름을 입력해주세요.');
+
+    renderCard(info);
+    
+    // 화면 전환
+    const formSec = $('viewForm');
+    const resultSec = $('viewResult');
+    formSec.style.opacity = '0';
+    setTimeout(() => {
+      formSec.classList.add('hidden');
+      resultSec.classList.remove('hidden');
+      resultSec.classList.add('fade-enter');
+      window.scrollTo(0, 0);
+    }, 200);
+  });
+
+  // 뒤로가기
+  $('backBtn').addEventListener('click', () => {
+    const formSec = $('viewForm');
+    const resultSec = $('viewResult');
+    resultSec.classList.add('hidden');
+    formSec.classList.remove('hidden');
+    formSec.style.opacity = '1';
+    window.scrollTo(0, 0);
+  });
+
+  function renderCard(info) {
+    const cardEl = $('cardElement');
+    cardEl.className = 'id-card'; 
+    cardEl.classList.add(selectedTheme);
+
+    const avatarBox = $('rAvatar');
+    avatarBox.innerHTML = ''; 
+    
+    // [중요] 업로드된 이미지가 있으면 img 태그 생성
+    if(uploadedImageSrc) {
+      const img = document.createElement('img');
+      img.src = uploadedImageSrc;
+      // (CSS에서 .avatar-img img 스타일이 적용되어 꽉 차게 나옴)
+      avatarBox.appendChild(img);
+    } else {
+      // 없으면 이름 첫 글자
+      avatarBox.textContent = info.name.substring(0,1);
     }
 
-    // 폼 제출 → 결과 반영
-    document.getElementById("profileForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const name = document.getElementById("name").value.trim();
-      const mbti = document.getElementById("mbti").value.trim();
-      const food = document.getElementById("food").value.trim() || "음식";
-      const hobby = document.getElementById("hobby").value.trim() || "취미";
-      const tone = document.getElementById("tone").value;
-      const contact = document.getElementById("contactTime").value;
+    $('rName').textContent = info.name;
+    $('rMbti').textContent = info.mbti;
 
-      // 결과에 반영
-      document.getElementById("rName").textContent = name || "이름 없음";
-      document.getElementById("rMbti").textContent = mbti || "MBTI 없음";
+    const tags = [info.food, info.hobby];
+    if(info.contact === 'day') tags.push('낮연락선호');
+    if(info.contact === 'night') tags.push('밤연락선호');
 
-      // 아바타
-      const rAvatar = document.getElementById("rAvatar");
-      rAvatar.innerHTML = "";
-      if (avatarSrc) {
-        const img = document.createElement("img");
-        img.src = avatarSrc;
-        img.style.width = "100%";
-        img.style.height = "100%";
-        img.style.objectFit = "cover";
-        rAvatar.appendChild(img);
-      } else {
-        rAvatar.textContent = name ? name.charAt(0) : "?";
-      }
-
-      // 태그
-      const tagsEl = document.getElementById("rTags");
-      tagsEl.innerHTML = "";
-      const tag1 = document.createElement("div"); tag1.className="tag"; tag1.textContent = "#" + food;
-      const tag2 = document.createElement("div"); tag2.className="tag"; tag2.textContent = "#" + hobby;
-      tagsEl.appendChild(tag1); tagsEl.appendChild(tag2);
-
-      // 소개문
-      document.getElementById("rDesc").textContent = makeDesc(name, food, hobby, tone, contact);
-
-      // 화면 전환
-      document.getElementById("viewForm").classList.add("hidden");
-      document.getElementById("viewResult").classList.remove("hidden");
-      window.scrollTo(0,0);
+    const tagsContainer = $('rTags');
+    tagsContainer.innerHTML = '';
+    tags.forEach(t => {
+      const span = document.createElement('span');
+      span.className = 'tag';
+      span.textContent = `#${t}`;
+      tagsContainer.appendChild(span);
     });
 
-    // 뒤로 가기
-    document.getElementById("backBtn").addEventListener("click", () => {
-      document.getElementById("viewResult").classList.add("hidden");
-      document.getElementById("viewForm").classList.remove("hidden");
-    });
+    $('rDesc').textContent = generateText(info);
+  }
 
-  </script>
+  function generateText({name, mbti, food, hobby, tone, contact}) {
+    const baseTemplates = {
+      polite: [
+        `안녕하세요, ${name}입니다. MBTI는 ${mbti}이며, 평소 ${hobby} 활동을 즐깁니다. 가장 좋아하는 음식은 ${food}입니다.`,
+        `반갑습니다. ${mbti} 성향을 가진 ${name}입니다. ${food} 맛집을 찾아다니는 것을 좋아하고, 취미는 ${hobby}입니다.`
+      ],
+      casual: [
+        `안녕, 나는 ${name}. MBTI는 ${mbti}야. 요즘은 ${food}에 빠져있고, 쉴 때는 주로 ${hobby} 하면서 시간을 보내.`,
+        `${name}입니다. 성격은 ${mbti}이고, ${food} 좋아해요. 취미는 ${hobby}입니다.`
+      ],
+      brief: [
+        `이름: ${name} | MBTI: ${mbti} | 취미: ${hobby}`,
+        `${name} / ${mbti} / ${food} 선호 / ${hobby} 즐김`
+      ],
+      emotional: [
+        `${name}. ${mbti}의 시선으로 일상을 기록합니다. ${food}의 맛과 ${hobby}의 시간을 사랑합니다.`,
+        `${name}입니다. ${mbti} 특유의 감성으로 ${hobby} 하는 것을 좋아합니다. 소울푸드는 ${food}입니다.`
+      ]
+    };
+
+    let text = pick(baseTemplates[tone] || baseTemplates.polite);
+
+    let contactMsg = '';
+    if(contact !== 'any') {
+      if(tone === 'polite') contactMsg = contact === 'day' ? " 연락은 주로 업무 시간(낮)에 주시면 감사하겠습니다." : " 늦은 시간에도 편하게 연락 주셔도 됩니다.";
+      else if(tone === 'casual') contactMsg = contact === 'day' ? " 연락은 낮에 해줘!" : " 밤 늦게 연락해도 괜찮아.";
+      else if(tone === 'brief') contactMsg = contact === 'day' ? " (낮 연락 선호)" : " (밤 연락 선호)";
+      else if(tone === 'emotional') contactMsg = contact === 'day' ? " 해가 떠 있는 시간에 소통하는 것을 좋아합니다." : " 밤의 고요한 시간에 대화 나누길 즐깁니다.";
+    }
+
+    return text + contactMsg;
+  }
+
+  $('copyBtn').addEventListener('click', () => {
+    navigator.clipboard.writeText($('rDesc').textContent)
+      .then(() => alert('텍스트가 복사되었습니다.'));
+  });
+
+  $('downloadBtn').addEventListener('click', () => {
+    const target = $('captureTarget');
+    html2canvas(target, {
+      backgroundColor: null,
+      scale: 3,
+      logging: false,
+      useCORS: true
+    }).then(canvas => {
+      const link = document.createElement('a');
+      link.download = `${$('name').value}_profile.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  });
+});
+</script>
 </body>
 </html>
 

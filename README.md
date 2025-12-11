@@ -84,13 +84,3 @@ html2canvas 라이브러리 사용 시 기본 설정으로는 결과 이미지�
 
 **사용자 경험(UX) 중심의 기능 개선**
 기능 구현에만 그치지 않고 사용자의 실제 경험을 고려했습니다. 브라우저 기본 Alert 창 대신 직접 구현한 토스트 메시지를 사용하여 시각적 방해를 줄였으며, 모바일 환경에서의 사용성을 고려해 네이티브 공유 기능을 추가함으로써 완성도를 높였습니다.
-
-## 설치 및 실행 (How to Run)
-
-별도의 빌드 과정 없이 `index.html` 파일을 웹 브라우저에서 실행하면 바로 사용할 수 있습니다.
-
-```bash
-# Repository Clone
-git clone [https://github.com/your-username/simple-profile-card.git](https://github.com/your-username/simple-profile-card.git)
-
-# Open index.html

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Profile Card - Final Fixed</title>
+  <title>Simple Profile Card</title>
   
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -11,8 +11,9 @@
   <style>
     :root {
       --bg-color: #F8FAFC;
-      --panel-bg: rgba(255, 255, 255, 0.9);
-      --primary: #3b82f6; 
+      --panel-bg: rgba(255, 255, 255, 0.95);
+      --primary: #8cb6f5; /* 파스텔 블루 */
+      --primary-hover: #7ba3e0;
       --text-main: #0f172a;
       --text-sub: #64748b;
       --border-color: #e2e8f0;
@@ -29,6 +30,7 @@
       background-color: var(--bg-color);
       color: var(--text-main);
       overflow-x: hidden;
+      padding-bottom: 40px; 
     }
 
     .mesh-bg {
@@ -38,20 +40,48 @@
 
     .wrap { width: min(460px, 92%); padding: 40px 0; position: relative; z-index: 1; }
 
-    header { text-align: center; margin-bottom: 32px; }
-    header h1 { font-size: 24px; font-weight: 700; margin: 0 0 8px; color: #0f172a; letter-spacing: -0.5px; }
-    header p { margin: 0; color: var(--text-sub); font-size: 14px; }
-
+    /* 패널 공통 스타일 */
     .clean-panel {
       background: var(--panel-bg); backdrop-filter: blur(10px);
       border: 1px solid var(--border-color); border-radius: 20px; padding: 32px 28px;
       box-shadow: var(--shadow);
     }
 
+    /* 인트로 전용 스타일 */
+    #viewIntro { text-align: center; padding: 60px 20px; }
+    
+    /* 3번: 입체적인 카드 스타일 SVG */
+    .intro-svg-container {
+      display: flex; justify-content: center; margin-bottom: 30px;
+    }
+    .intro-svg { 
+      animation: float 3s ease-in-out infinite; 
+    }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    
+    .main-title { font-size: 28px; font-weight: 800; margin: 0 0 10px; color: #0f172a; letter-spacing: -0.5px; }
+    .sub-title { margin: 0 0 40px; color: var(--text-sub); font-size: 16px; line-height: 1.5; }
+    
+    /* 버튼 스타일 (파스텔 톤 적용) */
+    .btn-start {
+      width: 100%; max-width: 240px; padding: 18px; border-radius: 12px;
+      background: var(--primary); color: white; font-size: 16px; font-weight: 700;
+      border: none;
+      box-shadow: 0 4px 12px rgba(140, 182, 245, 0.4); 
+      transition: transform 0.2s, background 0.2s;
+    }
+    .btn-start:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
+    /* 화면 전환 애니메이션 */
     .fade-enter { animation: fadeUp 0.4s ease-out forwards; }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    .form-group { margin-bottom: 20px; }
+    /* 폼 스타일 */
+    .form-header { text-align: center; margin-bottom: 32px; }
+    .form-header .main-title { font-size: 24px; margin-bottom: 6px; }
+    .form-header .sub-title { font-size: 15px; margin-bottom: 0; }
+    
+    .form-group { margin-bottom: 24px; }
     label { display: block; font-size: 13px; font-weight: 600; color: var(--text-sub); margin-bottom: 8px; }
     .input-wrapper { display: flex; align-items: center; gap: 8px; }
 
@@ -60,14 +90,8 @@
       border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); font-size: 14px;
       transition: all 0.2s;
     }
-    input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1); }
-    input::placeholder { color: #cbd5e1; }
-    input[type="file"] { padding: 8px; font-size: 12px; }
-    input[type="file"]::file-selector-button {
-      background: #f1f5f9; border: 1px solid #e2e8f0; color: #475569;
-      padding: 6px 12px; margin-right: 12px; border-radius: 6px; cursor: pointer; font-weight: 500;
-    }
-
+    input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(140, 182, 245, 0.2); }
+    
     .color-grid { display: flex; gap: 12px; padding: 4px 0; justify-content: center; }
     .color-swatch {
       width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
@@ -96,6 +120,7 @@
     }
     .btn-primary:hover { background: #334155; }
 
+    /* 결과 카드 스타일 */
     .id-card-wrapper { padding: 10px; margin-bottom: 24px; }
     .id-card {
       position: relative; overflow: hidden; border-radius: 20px; padding: 40px 30px; text-align: center;
@@ -105,21 +130,14 @@
     .avatar-frame {
       width: 100px; height: 100px; margin: 0 auto 20px; border-radius: 50%;
       background: rgba(255,255,255,0.5); overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
     .avatar-img {
-      width: 100%; height: 100%; object-fit: cover;
-      display: flex; align-items: center; justify-content: center;
+      width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
       font-size: 32px; font-weight: 700; background: rgba(255,255,255,0.8); color: inherit;
     }
+    .avatar-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
     
-    /* [수정됨] 업로드된 이미지가 컨테이너를 가득 채우도록 스타일 추가 */
-    .avatar-img img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
-
     .card-name { font-size: 22px; font-weight: 800; margin: 0 0 6px; color: inherit; }
     .card-mbti {
       display: inline-block; font-size: 12px; font-weight: 600;
@@ -138,29 +156,64 @@
       font-size: 14px; line-height: 1.6; color: #334155; text-align: left; word-break: keep-all;
     }
 
-    .action-group { display: flex; gap: 10px; margin-bottom: 16px; }
+    .action-group { display: flex; gap: 8px; margin-bottom: 16px; }
     .btn-secondary {
       flex: 1; padding: 14px; border-radius: 10px; background: white; border: 1px solid var(--border-color);
       color: #475569; font-weight: 500; font-size: 14px; transition: 0.2s;
     }
-    .btn-secondary:hover { background: #f8fafc; }
-    .btn-download { background: var(--text-main); color: white; border: none; }
+    .btn-secondary:hover { background: #f8fafc; border-color: #cbd5e1; }
+    .btn-download { background: var(--text-main); color: white; border: 1px solid var(--text-main); }
     .btn-download:hover { background: #334155; }
     .btn-text { width: 100%; background: none; color: #94a3b8; font-size: 13px; text-decoration: underline; padding: 10px; }
+    
     .hidden { display: none !important; }
+
+    /* Toast Notification */
+    #toast {
+      visibility: hidden; min-width: 250px; margin-left: -125px;
+      background-color: rgba(15, 23, 42, 0.9); color: #fff; text-align: center;
+      border-radius: 50px; padding: 12px; position: fixed; z-index: 100;
+      left: 50%; bottom: 30px; font-size: 14px; font-weight: 500;
+      opacity: 0; transition: opacity 0.3s, bottom 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    #toast.show { visibility: visible; opacity: 1; bottom: 40px; }
   </style>
 </head>
 <body>
 
 <div class="mesh-bg"></div>
+<div id="toast">알림 메시지</div>
 
 <div class="wrap">
-  <header>
-    <h1>프로필 생성기</h1>
-    <p>담백하고 깔끔한 나만의 소개</p>
-  </header>
+  
+  <section id="viewIntro" class="clean-panel fade-enter">
+    <div class="intro-svg-container">
+        <svg class="intro-svg" width="120" height="120" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g transform="rotate(-8 50 50)">
+                <rect x="28" y="25" width="56" height="72" rx="8" fill="#cbd5e1" />
+                <rect x="24" y="21" width="56" height="72" rx="8" fill="url(#card_grad)" stroke="white" stroke-width="2"/>
+                <circle cx="52" cy="48" r="14" fill="white" fill-opacity="0.5"/>
+                <rect x="38" y="70" width="28" height="4" rx="2" fill="white" fill-opacity="0.6"/>
+            </g>
+            <defs>
+                <linearGradient id="card_grad" x1="24" y1="21" x2="80" y2="93" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#bae6fd"/>
+                    <stop offset="1" stop-color="#e0f2fe"/>
+                </linearGradient>
+            </defs>
+        </svg>
+    </div>
+    
+    <h1 class="main-title">프로필 생성기</h1>
+    <p class="sub-title">담백하고 깔끔한 나만의 소개 카드를 만들어보세요.</p>
+    <button id="startBtn" class="btn-start">프로필 생성</button>
+  </section>
 
-  <section id="viewForm" class="clean-panel fade-enter">
+  <section id="viewForm" class="clean-panel hidden">
+    <div class="form-header">
+      <h1 class="main-title">프로필 생성기</h1>
+      <p class="sub-title">담백하고 깔끔한 나만의 소개</p>
+    </div>
     <form id="profileForm">
       <div class="form-group">
         <label>이름</label>
@@ -188,7 +241,7 @@
       <div class="form-group">
         <label>MBTI</label>
         <div class="input-wrapper">
-          <input type="text" id="mbti" placeholder="예: ENFP" style="text-transform:uppercase;">
+          <input type="text" id="mbti" placeholder="예: ENTP, ISFP..." style="text-transform:uppercase;">
           <button type="button" id="btnRandMbti" class="btn-rand">랜덤</button>
         </div>
       </div>
@@ -196,7 +249,7 @@
       <div class="form-group">
         <label>좋아하는 음식</label>
         <div class="input-wrapper">
-          <input type="text" id="food" placeholder="김치찌개, 파스타...">
+          <input type="text" id="food" placeholder="예: 김치찌개, 파스타...">
           <button type="button" id="btnRandFood" class="btn-rand">랜덤</button>
         </div>
       </div>
@@ -204,7 +257,7 @@
       <div class="form-group">
         <label>취미 / 관심사</label>
         <div class="input-wrapper">
-          <input type="text" id="hobby" placeholder="독서, 코딩...">
+          <input type="text" id="hobby" placeholder="예: 독서, 코딩...">
           <button type="button" id="btnRandHobby" class="btn-rand">랜덤</button>
         </div>
       </div>
@@ -214,25 +267,25 @@
         <select id="contactTime">
           <option value="any">상관없음</option>
           <option value="day">낮 (09:00 - 18:00)</option>
-          <option value="night">밤 (19:00 - 24:00)</option>
+          <option value="night">밤 (18:00 - 24:00)</option>
         </select>
       </div>
 
       <div class="form-group">
         <label>문체 선택</label>
         <select id="tone">
-          <option value="polite">차분하고 공손하게 (회사용)</option>
+          <option value="polite">차분하고 공손하게 (비지니스용)</option>
           <option value="casual">친근하고 자연스럽게 (일상용)</option>
           <option value="brief">간결하고 명확하게 (정보위주)</option>
-          <option value="emotional">감성적인 에세이톤 (기록용)</option>
+          <option value="emotional">아련하고 감성적이게 (sns용)</option>
         </select>
       </div>
 
-      <button type="submit" class="btn-primary">프로필 카드 생성</button>
+      <button type="submit" class="btn-primary">카드 만들기</button>
     </form>
   </section>
 
-  <section id="viewResult" class="fade-enter hidden">
+  <section id="viewResult" class="hidden">
     <div id="captureTarget" class="id-card-wrapper">
       <div class="id-card" id="cardElement">
         <div class="card-content">
@@ -249,7 +302,8 @@
 
     <div class="action-group">
       <button class="btn-secondary" id="copyBtn">텍스트 복사</button>
-      <button class="btn-secondary btn-download" id="downloadBtn">이미지 저장</button>
+      <button class="btn-secondary" id="shareBtn">공유하기</button>
+      <button class="btn-secondary btn-download" id="downloadBtn">저장</button>
     </div>
     <button class="btn-text" id="backBtn">다시 만들기</button>
   </section>
@@ -257,24 +311,53 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+  // [상태 변수]
   let uploadedImageSrc = null;
   let selectedTheme = 'bg-ocean';
 
-  const dataBank = {
-    mbti: ['ISTJ','ISFJ','INFJ','INTJ','ISTP','ISFP','INFP','INTP','ESTP','ESFP','ENFP','ENTP','ESTJ','ESFJ','ENFJ','ENTJ'],
-    foods: ['김치찌개','평양냉면','초밥','파스타','스테이크','떡볶이','국밥','샐러드','피자','치킨'],
-    hobbies: ['독서','영화 감상','코딩','헬스','산책','사진 촬영','전시회 관람','게임','드라이브','음악 감상']
-  };
-
+  // [Helper]
   const $ = id => document.getElementById(id);
   const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+  
+  function showToast(msg) {
+    const t = $('toast');
+    t.textContent = msg;
+    t.className = 'show';
+    setTimeout(() => { t.className = t.className.replace('show', ''); }, 2500);
+  }
+
+  // [화면 전환 함수]
+  function switchView(fromId, toId) {
+    const fromEl = $(fromId);
+    const toEl = $(toId);
+    
+    fromEl.style.opacity = '0';
+    setTimeout(() => {
+      fromEl.classList.add('hidden');
+      toEl.classList.remove('hidden');
+      toEl.classList.add('fade-enter');
+      toEl.style.opacity = '1'; 
+      window.scrollTo(0, 0);
+    }, 200);
+  }
+
+  // [Intro -> Form]
+  $('startBtn').addEventListener('click', () => {
+    switchView('viewIntro', 'viewForm');
+  });
+
+  const dataBank = {
+    mbti: ['ISTJ','ISFJ','INFJ','INTJ','ISTP','ISFP','INFP','INTP','ESTP','ESFP','ENFP','ENTP','ESTJ','ESFJ','ENFJ','ENTJ'],
+    foods: ['김치찌개','평양냉면','초밥','파스타','스테이크','떡볶이','국밥','샐러드','피자','치킨','마라탕'],
+    hobbies: ['독서','영화 감상','코딩','헬스','산책','사진 촬영','전시회 관람','게임','드라이브','음악 감상','카페 투어']
+  };
 
   // 랜덤 버튼
   $('btnRandMbti').addEventListener('click', () => { $('mbti').value = pick(dataBank.mbti); });
   $('btnRandFood').addEventListener('click', () => { $('food').value = pick(dataBank.foods); });
   $('btnRandHobby').addEventListener('click', () => { $('hobby').value = pick(dataBank.hobbies); });
 
-  // 컬러 선택
+  // 테마 선택
   const swatches = document.querySelectorAll('.color-swatch');
   swatches.forEach(swatch => {
     swatch.addEventListener('click', () => {
@@ -284,12 +367,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // [중요] 이미지 업로드 처리 로직
+  // 이미지 업로드
   $('profileImg').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if(file) {
       const reader = new FileReader();
-      // 파일을 읽어서 데이터 URL로 변환 후 저장
       reader.onload = function(evt) { uploadedImageSrc = evt.target.result; };
       reader.readAsDataURL(file);
     } else {
@@ -297,42 +379,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 폼 제출
+  // [Form -> Result]
   $('profileForm').addEventListener('submit', (e) => {
     e.preventDefault();
+    
     const info = {
       name: $('name').value.trim(),
       mbti: $('mbti').value.toUpperCase().trim() || 'SECRET',
-      food: $('food').value.trim() || '음식',
-      hobby: $('hobby').value.trim() || '취미',
+      food: $('food').value.trim() || 'SECRET',
+      hobby: $('hobby').value.trim() || 'SECRET',
       contact: $('contactTime').value,
       tone: $('tone').value
     };
 
-    if(!info.name) return alert('이름을 입력해주세요.');
+    if(!info.name) {
+      showToast('이름을 입력해주세요!');
+      return;
+    }
 
     renderCard(info);
-    
-    // 화면 전환
-    const formSec = $('viewForm');
-    const resultSec = $('viewResult');
-    formSec.style.opacity = '0';
-    setTimeout(() => {
-      formSec.classList.add('hidden');
-      resultSec.classList.remove('hidden');
-      resultSec.classList.add('fade-enter');
-      window.scrollTo(0, 0);
-    }, 200);
+    switchView('viewForm', 'viewResult');
   });
 
-  // 뒤로가기
+  // [Result -> Form (다시 만들기)]
   $('backBtn').addEventListener('click', () => {
-    const formSec = $('viewForm');
-    const resultSec = $('viewResult');
-    resultSec.classList.add('hidden');
-    formSec.classList.remove('hidden');
-    formSec.style.opacity = '1';
-    window.scrollTo(0, 0);
+    switchView('viewResult', 'viewForm');
   });
 
   function renderCard(info) {
@@ -343,14 +414,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const avatarBox = $('rAvatar');
     avatarBox.innerHTML = ''; 
     
-    // [중요] 업로드된 이미지가 있으면 img 태그 생성
     if(uploadedImageSrc) {
       const img = document.createElement('img');
       img.src = uploadedImageSrc;
-      // (CSS에서 .avatar-img img 스타일이 적용되어 꽉 차게 나옴)
       avatarBox.appendChild(img);
     } else {
-      // 없으면 이름 첫 글자
       avatarBox.textContent = info.name.substring(0,1);
     }
 
@@ -376,25 +444,20 @@ document.addEventListener('DOMContentLoaded', () => {
   function generateText({name, mbti, food, hobby, tone, contact}) {
     const baseTemplates = {
       polite: [
-        `안녕하세요, ${name}입니다. MBTI는 ${mbti}이며, 평소 ${hobby} 활동을 즐깁니다. 가장 좋아하는 음식은 ${food}입니다.`,
-        `반갑습니다. ${mbti} 성향을 가진 ${name}입니다. ${food} 맛집을 찾아다니는 것을 좋아하고, 취미는 ${hobby}입니다.`
+        `안녕하세요, ${name}입니다. MBTI는 ${mbti}이며, 평소 ${hobby} 활동을 즐깁니다. 가장 좋아하는 음식은 ${food}입니다.`
       ],
       casual: [
-        `안녕, 나는 ${name}. MBTI는 ${mbti}야. 요즘은 ${food}에 빠져있고, 쉴 때는 주로 ${hobby} 하면서 시간을 보내.`,
-        `${name}입니다. 성격은 ${mbti}이고, ${food} 좋아해요. 취미는 ${hobby}입니다.`
+        `안녕, 나는 ${name}. MBTI는 ${mbti}야. 요즘은 ${food}에 빠져있고, 쉴 때는 주로 ${hobby} 하면서 시간을 보내.`
       ],
       brief: [
-        `이름: ${name} | MBTI: ${mbti} | 취미: ${hobby}`,
-        `${name} / ${mbti} / ${food} 선호 / ${hobby} 즐김`
+        `이름: ${name} | MBTI: ${mbti} | 좋아하는 음식: ${food} | 취미: ${hobby}`
       ],
       emotional: [
-        `${name}. ${mbti}의 시선으로 일상을 기록합니다. ${food}의 맛과 ${hobby}의 시간을 사랑합니다.`,
-        `${name}입니다. ${mbti} 특유의 감성으로 ${hobby} 하는 것을 좋아합니다. 소울푸드는 ${food}입니다.`
+        `${name}. ${mbti}의 시선으로 일상을 기록합니다. 저를 ${food}의 맛과 ${hobby}으로 채우는 것을 사랑합니다.`
       ]
     };
 
     let text = pick(baseTemplates[tone] || baseTemplates.polite);
-
     let contactMsg = '';
     if(contact !== 'any') {
       if(tone === 'polite') contactMsg = contact === 'day' ? " 연락은 주로 업무 시간(낮)에 주시면 감사하겠습니다." : " 늦은 시간에도 편하게 연락 주셔도 됩니다.";
@@ -402,31 +465,43 @@ document.addEventListener('DOMContentLoaded', () => {
       else if(tone === 'brief') contactMsg = contact === 'day' ? " (낮 연락 선호)" : " (밤 연락 선호)";
       else if(tone === 'emotional') contactMsg = contact === 'day' ? " 해가 떠 있는 시간에 소통하는 것을 좋아합니다." : " 밤의 고요한 시간에 대화 나누길 즐깁니다.";
     }
-
     return text + contactMsg;
   }
 
   $('copyBtn').addEventListener('click', () => {
-    navigator.clipboard.writeText($('rDesc').textContent)
-      .then(() => alert('텍스트가 복사되었습니다.'));
+    navigator.clipboard.writeText($('rDesc').textContent).then(() => showToast('텍스트가 복사되었습니다! 🎉'));
+  });
+
+  $('shareBtn').addEventListener('click', async () => {
+    if (!navigator.share) {
+      showToast('이 브라우저는 공유 기능을 지원하지 않습니다.');
+      return;
+    }
+    showToast('이미지 생성 중...');
+    const target = $('captureTarget');
+    try {
+      const canvas = await html2canvas(target, { backgroundColor: null, scale: 3, useCORS: true, allowTaint: true });
+      canvas.toBlob(async (blob) => {
+        const file = new File([blob], "profile_card.png", { type: "image/png" });
+        try {
+          await navigator.share({ title: '나의 프로필 카드', text: '나만의 프로필 카드를 만들어보세요!', files: [file] });
+          showToast('공유 완료! ✨');
+        } catch (err) { console.log('공유 취소됨'); }
+      });
+    } catch(e) { showToast('이미지 생성 실패 😢'); }
   });
 
   $('downloadBtn').addEventListener('click', () => {
-    const target = $('captureTarget');
-    html2canvas(target, {
-      backgroundColor: null,
-      scale: 3,
-      logging: false,
-      useCORS: true
-    }).then(canvas => {
+    showToast('이미지 저장 중...');
+    html2canvas($('captureTarget'), { backgroundColor: null, scale: 4, logging: false, useCORS: true, allowTaint: true }).then(canvas => {
       const link = document.createElement('a');
       link.download = `${$('name').value}_profile.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
+      showToast('저장이 시작되었습니다 💾');
     });
   });
 });
 </script>
 </body>
 </html>
-
